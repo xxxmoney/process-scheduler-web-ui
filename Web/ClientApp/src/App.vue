@@ -1,42 +1,56 @@
 <template>
-  <header class="sticky top-0 left-0 w-full px-4 py-5 grid grid-cols-3 bg-secondary text-primary">
-    <nav-menu></nav-menu>
-    <h1 class="big-heading flex items-center">
-      <a href="/">Follow Agency</a>
-    </h1>
-    <LocaleChanger class="flex flex-row justify-end items-center" />
-  </header>
+  <Toast />
 
-  <main class="bg-primary py-12">
-    <router-view />
-  </main>
-    
-  <footer class="bg-secondary text-primary px-12 pt-12 pb-24">
-    <BottomFooter />
-  </footer>
+  <div class="w-full lg:w-1/2 xl:w-1/3 py-16 px-2 lg:px-8">
+    <Dropdown v-model="selected" :options="types" optionLabel="label" optionValue="value" placeholder="Select a type" class="w-full" :showClear="true"></Dropdown>
+
+    <VirtualMemoryManager v-if="selected == SolverType.VirtualMemoryManager" />
+    <ProcessSCheduler v-if="selected == SolverType.ProcessScheduler" />
+  </div>
 </template>
 
 <script>
-  import NavMenu from './components/NavMenu.vue'
-  import LocaleChanger from './components/LocaleChanger.vue'
-  import BottomFooter from './components/BottomFooter.vue'
+import Dropdown from 'primevue/dropdown';
+import { ref } from 'vue';
+import VirtualMemoryManager from './components/VirtualMemoryManager.vue';
+import ProcessSCheduler from './components/ProcessScheduler.vue';
+import SolverType from './enums/SolverType';
+import Toast from 'primevue/toast';
 
-  export default {
-    name: 'App',
-    components: {
-        NavMenu,
-        LocaleChanger,
-        BottomFooter
+export default {
+  name: 'App',
+  components: {
+    Dropdown, 
+    VirtualMemoryManager, 
+    ProcessSCheduler, 
+    Toast
+  },
+  setup() {
+    const types = [
+      { label: 'ProcessSheduler', value: SolverType.ProcessScheduler },
+      { label: 'VirtualMemoryManager', value: SolverType.VirtualMemoryManager },
+    ];
+
+    const selected = ref(null);
+
+    // Hacky fix for transparent buttons.
+    setInterval(() => {
+        // Sets type to empty.
+        document.querySelectorAll("button[type='button']").forEach(el => {
+          el.setAttribute('type', '');
+        });
+      }, 50);
+
+    return {
+      selected,
+      types,
+      SolverType
     }
   }
-  
+}
 </script>
 
 <style>
-  body {
-    margin: 0;
-  } 
-
   #app {
     font-family: Avenir, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -44,4 +58,6 @@
     color: #2c3e50;
   }
 
+  
 </style>
+

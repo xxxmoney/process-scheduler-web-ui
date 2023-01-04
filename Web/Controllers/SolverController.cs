@@ -3,28 +3,36 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Web.Dto.Solvers;
 using Web.Operations.Solvers;
 
 namespace Web.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("/api/[controller]")]
     public class SolverController : ControllerBase
     {
         private readonly IVirtualMemoryManager virtualMemoryManager;
         private readonly IProcessScheduler processScheduler;
 
+        public SolverController(IProcessScheduler processScheduler, IVirtualMemoryManager virtualMemoryManager)
+        {
+            this.processScheduler = processScheduler;
+            this.virtualMemoryManager = virtualMemoryManager;
+        }
 
         [HttpPost(nameof(RunProcessScheduler))]
-        public IActionResult RunProcessScheduler()
+        public IActionResult RunProcessScheduler([FromBody] ProcessSchedulerRequest request)
         {
-            return Ok();   
+            var result = processScheduler.Process(request);
+            return Ok(result);
         }
 
         [HttpPost(nameof(RunVirtualManager))]
-        public IActionResult RunVirtualManager()
+        public IActionResult RunVirtualManager([FromBody] VirtualMemoryManagerRequest request)
         {
-            return Ok();
+            var result = this.virtualMemoryManager.Process(request);
+            return Ok(result);
         }
 
     }
