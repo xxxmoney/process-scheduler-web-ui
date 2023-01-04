@@ -8,13 +8,17 @@
         </div>       
         <div class="control-container">
             <label for="maxQueue">Page references</label>
-            <Chips id="pageReferences" v-model="filter.PageReferences" class="w-full" />
+            <Chips id="pageReferences" v-model="filter.PageReferences" class="w-full" separator="," />
         </div>     
 
         <Button @click="submit" label="Submit" class="col-span-2"></Button>
 
-        <div v-if="result" class="">
-
+        <div v-if="result" class="flex flex-row col-span-2">
+            <div v-for="item in result.history" class="flex flex-col border border-gray-300 p-2">
+                <div v-for="page in item" class="border border-gray-300 p-2">
+                    {{ page?.pageNumber }}
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -24,7 +28,7 @@ import Dropdown from 'primevue/dropdown';
 import Chips from 'primevue/chips';
 import InputNumber from 'primevue/inputnumber';
 import VirtualMemoryManagerType from '@/enums/VirtualMemoryManagerType';
-import { ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import Button from 'primevue/button';
 import { useToast } from 'primevue/usetoast';
 import axios from 'axios'
@@ -46,11 +50,10 @@ export default {
             Type: 0
         }); 
         const result = ref(null);
-
         
         const toast = useToast();
         const submit = async () => {            
-            try {
+            try {                
                 const { data } = await axios.post('/api/solver/RunVirtualManager', filter.value);
 
                 result.value = data;
@@ -61,12 +64,29 @@ export default {
 
                 toast.add({severity:'error', summary: 'Error', detail:'', life: 3000});
             }
-        }
+        };
+
+        // Watches for changes in the page references.
+        watch(() => filter.value.PageReferences, () => {
+            const filtered = filter.value.PageReferences
+                .map(item => parseInt(item))
+                .filter(item => !isNaN(item));
+
+            // Checks whether there is a change.
+            if (JSON.stringify(filtered) == JSON.stringify(filter.value.PageReferences)) {
+                return;
+            }
+            
+            filter.value.PageReferences = filtered;
+        });
+
+        const resultStyle = computed(() => 'display: grid; grid-template-columns: repeat(' + filter.value.MaxQueue + ', minmax(0, 1fr));');
 
         return {
             types,
             filter,
             result,
+            resultStyle,
             submit
         }
     }

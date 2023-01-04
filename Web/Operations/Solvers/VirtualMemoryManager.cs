@@ -11,7 +11,7 @@ namespace Web.Operations.Solvers
     }
 
     public class VirtualMemoryManager : IVirtualMemoryManager
-    {        
+    {
         private BaseAlgorithm GetAlgorithm(VirtualMemoryManagerRequest request)
         {
             switch (request.Type)
@@ -40,8 +40,11 @@ namespace Web.Operations.Solvers
                 processor.AccessPage(reference);
             }
 
-            return new VirtualMemoryManagerResult {
-                History = processor.History.GetItems()
+            var history = processor.History.GetItems();
+
+            return new VirtualMemoryManagerResult
+            {
+                History = history
             };
         }
     }

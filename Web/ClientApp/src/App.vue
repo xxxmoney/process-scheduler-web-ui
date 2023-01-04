@@ -1,8 +1,8 @@
 <template>
   <Toast />
 
-  <div class="lg:w-1/2 xl:w-1/3 py-16 px-2 lg:px-8">
-    <Dropdown v-model="selected" :options="types" optionLabel="label" optionValue="value" placeholder="Select a type" class="w-full"></Dropdown>
+  <div class="w-full lg:w-1/2 xl:w-1/3 py-16 px-2 lg:px-8">
+    <Dropdown v-model="selected" :options="types" optionLabel="label" optionValue="value" placeholder="Select a type" class="w-full" :showClear="true"></Dropdown>
 
     <VirtualMemoryManager v-if="selected == SolverType.VirtualMemoryManager" />
     <ProcessSCheduler v-if="selected == SolverType.ProcessScheduler" />
@@ -31,7 +31,7 @@ export default {
       { label: 'VirtualMemoryManager', value: SolverType.VirtualMemoryManager },
     ];
 
-    const selected = ref();
+    const selected = ref(null);
 
     // Hacky fix for transparent buttons.
     setInterval(() => {
